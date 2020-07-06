@@ -18,7 +18,14 @@ namespace LoginOut.Controllers
             if (!Request.Headers.ContainsKey("username")) 
                 return BadRequest();
 
+            Request.Cookies.TryGetValue("username", out var _username);
             Request.Headers.TryGetValue("username", out var username);
+
+            if (_username != username)
+                return Unauthorized();
+
+            Response.Cookies.Delete("username");
+
             return Users.I.Logout(username) ? (ActionResult) Ok() : (ActionResult) Unauthorized();
         }
     }
