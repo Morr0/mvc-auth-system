@@ -8,18 +8,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LoginOut.Controllers
 {
-    [Route("api/logout")]
+    [Route("api/register")]
     [ApiController]
-    public class LogoutController : ControllerBase
+    public class RegisterController : ControllerBase
     {
         [HttpPost]
-        public ActionResult Logout()
+        public ActionResult Register()
         {
-            if (!Request.Headers.ContainsKey("username")) 
+            if (!Request.Headers.ContainsKey("username") || !Request.Headers.ContainsKey("password"))
                 return BadRequest();
 
             Request.Headers.TryGetValue("username", out var username);
-            return Users.I.Logout(username) ? (ActionResult) Ok() : (ActionResult) Unauthorized();
+            Request.Headers.TryGetValue("password", out var password);
+
+            return Users.I.Register(username, password) ? (ActionResult) Ok() : Unauthorized();
         }
     }
 }

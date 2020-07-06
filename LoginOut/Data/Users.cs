@@ -8,10 +8,13 @@ namespace LoginOut.Data
     public class Users : IUsers
     {
         Dictionary<string, string> users;
+        HashSet<string> activeUsers;
 
         private Users()
         {
             users = new Dictionary<string, string>();
+            activeUsers = new HashSet<string>();
+
             users.Add("Rami", "1234");
         }
 
@@ -22,7 +25,13 @@ namespace LoginOut.Data
             if (!users.TryGetValue(username, out var _password))
                 return false;
 
-            return password == _password;
+            if (password == _password && !activeUsers.Contains(username))
+            {
+                activeUsers.Add(username);
+                return true;
+            }
+
+            return false;
         }
 
         public bool Logout(string username)
@@ -30,7 +39,12 @@ namespace LoginOut.Data
             if (!users.TryGetValue(username, out var _password))
                 return false;
 
-            return users.Remove(username);
+            if (activeUsers.Contains(username))
+            {
+                return activeUsers.Remove(username);
+            }
+
+            return false;
         }
 
         public bool Register(string username, string password)
